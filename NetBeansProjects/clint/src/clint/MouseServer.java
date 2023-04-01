@@ -24,9 +24,10 @@ import java.util.logging.Logger;
  */
 public class MouseServer {
 
+    private static  int PORT = 7000;
     public static void main(String[] args) {
         try {
-            ServerSocket serverSocket = new ServerSocket(7800);
+            ServerSocket serverSocket = new ServerSocket(PORT);
             System.out.println("Server started on port " + serverSocket.getLocalPort());
             while (true) {
                 Socket socket = serverSocket.accept();
@@ -37,14 +38,17 @@ public class MouseServer {
             Logger.getLogger(MouseServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+        public static int setPort(int port){
+        PORT = port;
+        return port;
+    }
 }
 
 class ClientHandler implements Runnable {
 
     private Socket socket;
     private boolean isLeftButtonDown = false;
-    private boolean isRightButtonDown = false;
-
+    private boolean isRightButtonDown = false; 
     public ClientHandler(Socket socket) {
         this.socket = socket;
     }
@@ -53,8 +57,8 @@ class ClientHandler implements Runnable {
         try {
             Robot robot = new Robot();
             DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-
-            while (true) {
+            boolean running = true;
+            while (running) {
                 byte[] data = new byte[13];
                 try {
                     inputStream.readFully(data);
@@ -67,7 +71,10 @@ class ClientHandler implements Runnable {
                 boolean leftButton = buffer.get() != 0;
                 boolean rightButton = buffer.get() != 0;
                 //System.out.println("Received x: " + dx + ", y: " + dy + ", left: " + leftButton + ", right: " + rightButton);
-
+                if(dx == 0 && dy == 0 && leftButton == true && rightButton == true){
+                    running = false;
+                    break;
+                }
                 //get the current mouse position
                 Point currentMousePosition = MouseInfo.getPointerInfo().getLocation();
 
@@ -89,31 +96,6 @@ class ClientHandler implements Runnable {
                 } else {
                     robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
                 }
-
-                /* if (leftButton) {
-                    if (!isLeftButtonDown) {
-                        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-                        isLeftButtonDown = true;
-                    }
-                } else {
-                    if (isLeftButtonDown) {
-                        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-                        isLeftButtonDown = false;
-                    }
-                }
-
-                if (rightButton) {
-                    if (!isRightButtonDown) {
-                        robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
-                        isRightButtonDown = true;
-                    }
-                } else {
-                    if (isRightButtonDown) {
-                        robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
-                        isRightButtonDown = false;
-                    }
-                }*/
-                //System.out.println("Received x: " + dx + ", y: " + dy + ", left: " + leftButton + ", right: " + rightButton);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -122,6 +104,7 @@ class ClientHandler implements Runnable {
         } finally {
             try {
                 socket.close();
+                System.out.println("Connection closed");
             } catch (IOException e) {
                 e.printStackTrace();
             }

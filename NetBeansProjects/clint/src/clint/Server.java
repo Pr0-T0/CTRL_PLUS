@@ -3,9 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package clint;
-import clint.ScreenSender1;
-
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import com.google.zxing.BarcodeFormat;
@@ -14,10 +11,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.*;
@@ -26,7 +20,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JPanel;
 /**
  *
  * @author glitch
@@ -151,6 +144,7 @@ public class Server extends javax.swing.JFrame {
                 //new Server().setVisible(true);
             }
         });
+        
         Server obj = new Server();
         try{
             String ip = getHostIP();
@@ -172,9 +166,21 @@ public class Server extends javax.swing.JFrame {
             obj.pack();
             obj.setLocationRelativeTo(null);
             obj.setVisible(true);
-            ScreenSender1 screensender = new ScreenSender1();
-            screensender.main(args);
-        }catch(Exception e){
+            Thread mouseThread = new Thread(() -> MouseServer.main(args));
+            Thread screenThread = new Thread(() -> {
+            try {
+                ScreenSender1.main(args);
+            } catch (IOException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            });
+            Thread presentationThread = new Thread(() -> Presentation.main(args));
+            mouseThread.start();
+            screenThread.start();
+            presentationThread.start();
+            
+            
+            }catch(Exception e){
             System.out.println("Error");
         }
           

@@ -22,9 +22,10 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class ScreenSender1 {
-    private static final int PORT = 8000;
+    private static  int PORT = 9000;
     private static final int BUFFER_SIZE = 65536;
     private static final int THREAD_POOL_SIZE = 10;
+    private static boolean running = true;
 
     public static void main(String[] args) throws IOException {
         try {
@@ -32,15 +33,17 @@ public class ScreenSender1 {
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             Rectangle screenRectangle = new Rectangle(screenSize);
             Robot robot = new Robot();
-            
+            while(running){
             try (ServerSocket serverSocket = new ServerSocket(PORT)) {
                 System.out.println("Listening on port " + PORT);
-                while (true) {
                     Socket clientSocket = serverSocket.accept();
                     System.out.println("Accepted connection from " + clientSocket.getInetAddress());
                     threadPool.execute(() -> {
                         try {
-                            while (true) {
+                            while (running){ if(clientSocket.isClosed()){
+                                running = false; 
+                                break;
+                            }else{
                                 BufferedImage image = robot.createScreenCapture(screenRectangle);
                                 BufferedImage rotatedImage = rotateImage(image);
                                 
@@ -52,16 +55,32 @@ public class ScreenSender1 {
                                 
                                 clientSocket.getOutputStream().write(byteArrayOutputStream.toByteArray());
                             }
+                            }
+                            
                         } catch (IOException ex) {
-                            Logger.getLogger(ScreenSender1.class.getName()).log(Level.SEVERE, null, ex);
+                            
+                            try {
+                                System.out.println("Connection closed by client");
+                                clientSocket.close();
+                             
+                                //Logger.getLogger(ScreenSender1.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (IOException ex1) {
+                                Logger.getLogger(ScreenSender1.class.getName()).log(Level.SEVERE, null, ex1);
+                            }
                         }
                     });
-                }
+            }
+                
             }        } catch (AWTException ex) {
             Logger.getLogger(ScreenSender1.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+   
+    public static int setPort(int port){
+        PORT = port;
+        return port;
+    }
+    
     private static byte[] getBytes(BufferedImage image) throws IOException {
         byte[] bytes = new byte[BUFFER_SIZE];
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(BUFFER_SIZE);
