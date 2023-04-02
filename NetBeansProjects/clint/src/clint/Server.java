@@ -174,12 +174,8 @@ public class Server extends javax.swing.JFrame {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
             });
-            Thread presentationThread = new Thread(() -> Presentation.main(args));
             mouseThread.start();
             screenThread.start();
-            presentationThread.start();
-            
-            
             }catch(Exception e){
             System.out.println("Error");
         }
