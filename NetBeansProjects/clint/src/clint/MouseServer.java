@@ -21,10 +21,12 @@ import java.util.logging.Logger;
  */
 public class MouseServer {
 
-    private static  int PORT = 7000;
+    private static  int PORT = 8000;
     public static void main(String[] args) {
         try {
-            ServerSocket serverSocket = new ServerSocket(PORT);
+            int port = Integer.parseInt(args[0]);
+            PORT = port;
+            ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server started on port " + serverSocket.getLocalPort());
             while (true) {
                 Socket socket = serverSocket.accept();
@@ -34,10 +36,6 @@ public class MouseServer {
         } catch (IOException ex) {
             Logger.getLogger(MouseServer.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-        public static int setPort(int port){
-        PORT = port;
-        return port;
     }
 }
 
@@ -56,42 +54,52 @@ class ClientHandler implements Runnable {
             DataInputStream inputStream = new DataInputStream(socket.getInputStream());
             boolean running = true;
             while (running) {
-                byte[] data = new byte[13];
+                byte[] data = new byte[14];
                 try {
                     inputStream.readFully(data);
                 } catch (EOFException e) {
                     break;
                 }
-                ByteBuffer buffer = ByteBuffer.wrap(data);
-                int dx = buffer.getInt();
-                int dy = buffer.getInt();
-                boolean leftButton = buffer.get() != 0;
-                boolean rightButton = buffer.get() != 0;
-                //System.out.println("Received x: " + dx + ", y: " + dy + ", left: " + leftButton + ", right: " + rightButton);
-                if(dx == 0 && dy == 0 && leftButton == true && rightButton == true){
-                    running = false;
-                    break;
+                int identifier = data[0];                
+                ByteBuffer buffer = ByteBuffer.wrap(data,1,13);
+                if(identifier == 1){
+                    int dx = buffer.getInt();
+                    int dy = buffer.getInt();
+                    boolean leftButton = buffer.get() != 0;
+                    boolean rightButton = buffer.get() != 0;
+                    //System.out.println("Received x: " + dx + ", y: " + dy + ", left: " + leftButton + ", right: " + rightButton);
+                    if(dx == 0 && dy == 0 && leftButton == true && rightButton == true){
+                        running = false;
+                        break;
+                    }
+                    //get the current mouse position
+                    Point currentMousePosition = MouseInfo.getPointerInfo().getLocation();
+
+                    // add the difference to the current mouse position to get the new mouse position
+                    Point newMousePosition = new Point(currentMousePosition.x + dx, currentMousePosition.y + dy);
+                    robot.mouseMove(newMousePosition.x, newMousePosition.y);
+                    // handle mouse button events
+                    if (leftButton) {
+                        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+
+                    }
+                    else {
+                        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+                    }
+
+                    if (rightButton) {
+                        robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+
+                    } else {
+                        robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+                    }
                 }
-                //get the current mouse position
-                Point currentMousePosition = MouseInfo.getPointerInfo().getLocation();
-
-                // add the difference to the current mouse position to get the new mouse position
-                Point newMousePosition = new Point(currentMousePosition.x + dx, currentMousePosition.y + dy);
-                robot.mouseMove(newMousePosition.x, newMousePosition.y);
-                // handle mouse button events
-                if (leftButton) {
-                    robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-
-                }
-                else {
-                    robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-                }
-
-                if (rightButton) {
-                    robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
-
-                } else {
-                    robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+                else if(identifier == 2){
+                    
+                    int keycode = buffer.getInt();
+                    System.out.println("KeyCode Received"+keycode);
+                    robot.keyPress(keycode);
+                    robot.keyRelease(keycode);
                 }
             }
         } catch (IOException e) {

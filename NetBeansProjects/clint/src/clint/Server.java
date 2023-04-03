@@ -76,39 +76,89 @@ public class Server extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        minimize = new javax.swing.JLabel();
+        exit = new javax.swing.JLabel();
+        IpView = new javax.swing.JTextField();
+        Port = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 70, 150, 159));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 90, 150, 159));
 
-        jLabel2.setFont(new java.awt.Font("Sree Krushnadevaraya", 1, 18)); // NOI18N
-        jLabel2.setText("Scan the QR CODE to Connect");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 230, 250, 90));
+        minimize.setFont(new java.awt.Font("Liberation Sans", 1, 56)); // NOI18N
+        minimize.setForeground(new java.awt.Color(51, 153, 255));
+        minimize.setText("-");
+        minimize.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                minimizeMouseClicked(evt);
+            }
+        });
+        getContentPane().add(minimize, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 10, 40, 40));
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/clint/image.jpg"))); // NOI18N
+        exit.setFont(new java.awt.Font("Liberation Sans", 1, 30)); // NOI18N
+        exit.setForeground(new java.awt.Color(51, 153, 255));
+        exit.setText("X");
+        exit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                exitMouseClicked(evt);
+            }
+        });
+        getContentPane().add(exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 10, 30, 40));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        IpView.setEditable(false);
+        IpView.setBorder(null);
+        IpView.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                IpViewActionPerformed(evt);
+            }
+        });
+        getContentPane().add(IpView, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 260, 120, 20));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 500, 350));
+        Port.setEditable(false);
+        Port.setBorder(null);
+        Port.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PortActionPerformed(evt);
+            }
+        });
+        getContentPane().add(Port, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 300, 120, -1));
+
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("IP address :");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 260, 90, 20));
+
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setText("Port     :");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 300, -1, -1));
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/clint/background.png"))); // NOI18N
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -3, 460, 340));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void minimizeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minimizeMouseClicked
+        // TODO add your handling code here:
+        this.setState(Server.ICONIFIED);
+    }//GEN-LAST:event_minimizeMouseClicked
+
+    private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_exitMouseClicked
+
+    private void IpViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IpViewActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_IpViewActionPerformed
+
+    private void PortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PortActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PortActionPerformed
 
     /**
      * @param args the command line arguments
@@ -152,6 +202,7 @@ public class Server extends javax.swing.JFrame {
             String qrData = ip + ":" + port;
             System.out.println(qrData);
             
+            
             //qr code hints
             Map<EncodeHintType, Object>hints = new HashMap<>();
             hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
@@ -165,8 +216,12 @@ public class Server extends javax.swing.JFrame {
             obj.jLabel1.setIcon(qrImage);
             obj.pack();
             obj.setLocationRelativeTo(null);
+            //view ip and port
+            obj.IpView.setText(ip);
+            obj.Port.setText(Integer.toString(port));
             obj.setVisible(true);
-            Thread mouseThread = new Thread(() -> MouseServer.main(args));
+            Thread mouseThread;
+            mouseThread = new Thread(() -> MouseServer.main(new String[] { Integer.toString(port) }));
             Thread screenThread = new Thread(() -> {
             try {
                 ScreenSender1.main(args);
@@ -183,9 +238,13 @@ public class Server extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField IpView;
+    private javax.swing.JTextField Port;
+    private javax.swing.JLabel exit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel minimize;
     // End of variables declaration//GEN-END:variables
 }
